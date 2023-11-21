@@ -82,14 +82,20 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
 
         // Rendering
         //renderWindow->clear(convertHexToSfmlColor(0xfdf5e8));
-        renderWindow->clear(sf::Color::Black);
+        renderWindow->clear(winBackgroundColor);
 
         std::unique_lock<std::mutex> mlock(drawObjectSync);
 
         for (std::list<SFML_OBJECT>::iterator i = drawObjectInput.begin(); i != drawObjectInput.end(); i++) {  
             if (i->type == SFML_OBJ_CIRCLE) {
                 sf::CircleShape circle(i->radius);
-                circle.setFillColor(i->color);
+
+                circle.setFillColor(i->color1);
+                  
+                circle.setOutlineColor(i->color2);
+                circle.setOutlineThickness(i->thickness);
+
+
                 circle.setPosition(i->posX, i->posY);
                 circle.setPointCount(SFML_CIRCLE_POINT_COUNT_ACCURACY);
 
@@ -100,7 +106,7 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
                 line[0].position = sf::Vector2f(i->posX, i->posY);
                 line[1].position = sf::Vector2f(i->posX2, i->posY2);
                 
-                line[0].color = i->color;
+                line[0].color = i->color1;
                 line[1].color = i->color2;
 
                 renderWindow->draw(line);
@@ -122,7 +128,11 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
     return;
 }
 
-SfmlError SfmlCoreWindow::DrawCircle(float x, float y, float radius, unsigned long color, SFML_OBJECT **objOut)
+SfmlError SfmlCoreWindow::DrawCircle(
+    float x, float y, float radius, 
+    unsigned long backgroundColor, unsigned long edgeColor,
+    float thickness,
+    SFML_OBJECT **objOut)
 {
     std::unique_lock<std::mutex> mlock(drawObjectSync);
 
@@ -135,7 +145,9 @@ SfmlError SfmlCoreWindow::DrawCircle(float x, float y, float radius, unsigned lo
     obj.posX = x;
     obj.posY = y;
     obj.radius = radius;
-    obj.color = convertHexToSfmlColor(color);
+    obj.thickness = thickness;
+    obj.color1 = convertHexToSfmlColor(backgroundColor);
+    obj.color2 = convertHexToSfmlColor(edgeColor);
 
     drawObjectInput.push_back(obj);
 
@@ -161,7 +173,7 @@ SfmlError SfmlCoreWindow::DrawLine(float x, float y, float x2, float y2,
     obj.posY = y;
     obj.posX2 = x2;
     obj.posY2 = y2;
-    obj.color = convertHexToSfmlColor(color);
+    obj.color1 = convertHexToSfmlColor(color);
     obj.color2 = convertHexToSfmlColor (color2);
 
     drawObjectInput.push_back(obj);

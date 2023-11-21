@@ -27,20 +27,22 @@ typedef enum sfmlDrawObjectType {
 } SFML_DRAW_OBJECT_TYPE;
 
 typedef struct sfmlObjectSpecs {
-    SFML_DRAW_OBJECT_TYPE                   type;
+    SFML_DRAW_OBJECT_TYPE                       type;
 
     // circle, line
-    float                                   posX;
-    float                                   posY;
+    float                                       posX;
+    float                                       posY;
 
     // line
-    float                                   posX2;
-    float                                   posY2;
+    float                                       posX2;
+    float                                       posY2;
 
-    float                                   radius;
+    float                                       radius;
 
-    sf::Color                               color;
-    sf::Color                               color2;
+    float                                       thickness;
+
+    sf::Color                                   color1; //for circle: background
+    sf::Color                                   color2; // for circle: edge color
 } SFML_OBJECT, * PSFML_OBJECT;
 
 
@@ -49,6 +51,7 @@ private:
     const uint32_t                              winWidth;
     const uint32_t                              winHeight;
     const std::string                           winName;
+    sf::Color                                   winBackgroundColor;
 
     EventSignal                                 windowThreadSync;
     std::thread                                 *windowThreadObj;
@@ -59,10 +62,11 @@ private:
     std::list<SFML_OBJECT>                      drawObjectInput;
 
 public:
-    SfmlCoreWindow(uint32_t winWidth, uint32_t winHeight, std::string winName) :
+    SfmlCoreWindow(uint32_t winWidth, uint32_t winHeight, std::string winName, unsigned long backgroundColor) :
         winWidth(winWidth),
         winHeight(winHeight),
         winName(winName),
+        winBackgroundColor(convertHexToSfmlColor(backgroundColor)),
 
         renderWindow(nullptr),
         windowThreadObj(nullptr)
@@ -80,7 +84,11 @@ public:
     SfmlError StopWindowThread(void);
 
     // Color is in hexadecimal format (and alpha)
-    SfmlError DrawCircle(float x, float y, float radius, unsigned long color, SFML_OBJECT **objOut);
+    SfmlError DrawCircle(float x, float y, 
+        float radius, 
+        unsigned long backgroundColor, unsigned long edgeColor, 
+        float thickness,
+        SFML_OBJECT **objOut);
 
     SfmlError DrawLine(float x, float y, float x2, float y2,
         unsigned long color, unsigned long color2, SFML_OBJECT **objOut);

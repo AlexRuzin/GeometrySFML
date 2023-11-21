@@ -19,12 +19,16 @@ void drawCircleWithCrossSection(SfmlCoreWindow &sfmlWindow);
 void drawCircleWithCrossSectionOuter(SfmlCoreWindow &sfmlWindow);
 void drawVortexIter(SfmlCoreWindow &sfmlWindow);
 
+void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow);
+
 uint32_t genRandInt(uint32_t min, uint32_t max);
 uint32_t sumOfDigits(uint32_t n, uint32_t base);
 
+#define DEGREE_TO_RADIANS(x) (x * M_PI / 180)
+
 int main(void)
 {
-    SfmlCoreWindow sfmlWindow(SFML_WINDOW_SIZE_X, SFML_WINDOW_SIZE_Y, SFML_WINDOW_NAME);
+    SfmlCoreWindow sfmlWindow(SFML_WINDOW_SIZE_X, SFML_WINDOW_SIZE_Y, SFML_WINDOW_NAME, SFML_WINDOW_BACKGROUND_COLOR);
 
     SfmlError sfmlError = sfmlWindow.StartWindowThread();
     if (sfmlError) {
@@ -32,32 +36,12 @@ int main(void)
         return sfmlError;
     }
 
-    Sleep(10000);
-
-#if 0
-#define ITER_LOOP 1000
-    while (true) {
-        Sleep(ITER_LOOP);
-
-        SFML_OBJECT* circleObj = nullptr;
-        sfmlWindow.DrawCircle(350, 250, 100, 0xFF00FF, &circleObj);        
-
-        Sleep(ITER_LOOP);
-
-        SFML_OBJECT *lineObj = nullptr;
-        sfmlWindow.DrawLine(100, 100, 300, 300, 0xffffff, 0xffffff, &lineObj);
-        Sleep(ITER_LOOP);
-
-        sfmlWindow.DeleteDrawnObject(circleObj);
-        sfmlWindow.DeleteDrawnObject(lineObj);
-    }
-#endif
-
     Sleep(1000);
 
     //drawCircleWithCrossSection(sfmlWindow);
     //drawCircleWithCrossSectionOuter(sfmlWindow);
-    drawVortexIter(sfmlWindow);
+    //drawVortexIter(sfmlWindow);
+    drawFlowerOfLife(sfmlWindow);
 
     Sleep(INFINITE);
 
@@ -66,6 +50,69 @@ int main(void)
 
 void drawCircleWithCrossSectionOuter(SfmlCoreWindow &sfmlWindow)
 {
+
+}
+
+void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
+{
+    const float angle = M_PI / 3; //60 degrees
+    const float centerX = (SFML_WINDOW_SIZE_X / 2.f) - SFML_FLOWER_RADIUS;
+    const float centerY = (SFML_WINDOW_SIZE_Y / 2.f) - SFML_FLOWER_RADIUS;
+
+    // central circle
+    sfmlWindow.DrawCircle(
+        centerX, centerY, 
+        SFML_FLOWER_RADIUS, 
+        SFML_FLOWER_CIRCLE_STARTING_BACKGROUND,
+        SFML_FLOWER_CIRCLE_BOUNDARY_COLOR,
+        SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS,
+        nullptr);
+
+    for (uint16_t i = 0; i < 6; i++) {
+        const float x = centerX + SFML_FLOWER_RADIUS * cos(DEGREE_TO_RADIANS(60) * i);
+        const float y = centerY + SFML_FLOWER_RADIUS * sin(DEGREE_TO_RADIANS(60) * i);
+
+        sfmlWindow.DrawCircle(
+            x, y,
+            SFML_FLOWER_RADIUS,
+            SFML_FLOWER_CIRCLE_STARTING_BACKGROUND,
+            SFML_FLOWER_CIRCLE_BOUNDARY_COLOR,
+            SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS,
+            nullptr);
+
+        Sleep(100);
+    }
+
+#if 0
+    float x, y;
+    for (uint32_t layer = 1; layer <= SFML_FLOWER_LAYERS; layer++) {
+        for (uint32_t i = 0; i < 6; i++) {
+            x = centerX + layer * SFML_FLOWER_RADIUS * cos(i * angle);
+            y = centerY + layer * SFML_FLOWER_RADIUS * sin(i * angle);
+
+            sfmlWindow.DrawCircle(
+                x, y, 
+                SFML_FLOWER_RADIUS,
+                0xffffff, 
+                false,
+                nullptr);
+
+            for (uint32_t j = 1; j < layer; j++) {
+                x += SFML_FLOWER_RADIUS * cos((i - 0.5f) * angle);
+                y += SFML_FLOWER_RADIUS * sin((i - 0.5f) * angle);
+
+                sfmlWindow.DrawCircle(
+                    x, y,
+                    SFML_FLOWER_RADIUS,
+                    0xffffff,
+                    false,
+                    nullptr);
+                Sleep(100);
+            }
+        }
+    }
+#endif
+    
 
 }
 
@@ -78,6 +125,8 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
         circleCenterY - SFML_CIRCLE_RADIUS,
         SFML_CIRCLE_RADIUS,
         SFML_CIRCLE_COLOR,
+        0xff000000,
+        0.5f,
         nullptr);
 
     // x = x_center + r * cos(theta)
@@ -92,6 +141,8 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
             x, y,
             SFML_CIRCLE_POINT_RADIUS,
             SFML_CIRCLE_POINT_COLOR,
+            0xff000000,
+            0.5f,
             nullptr
         );        
     }
@@ -107,6 +158,8 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
             x, y,
             SFML_CIRCLE_POINT_RADIUS,
             SFML_CIRCLE_POINT_COLOR,
+            0xff000000,
+            0.5f,
             nullptr
         );
 
@@ -231,6 +284,8 @@ void drawCircleWithCrossSection(SfmlCoreWindow &sfmlWindow)
         circleCenterY - SFML_CIRCLE_RADIUS,
         SFML_CIRCLE_RADIUS,
         SFML_CIRCLE_COLOR,
+        0xff000000,
+        0.5f,
         &circleObj);
 
     // x = x_center + r * cos(theta)
@@ -244,6 +299,8 @@ void drawCircleWithCrossSection(SfmlCoreWindow &sfmlWindow)
             x, y,
             SFML_CIRCLE_POINT_RADIUS,
             SFML_CIRCLE_POINT_COLOR,
+            0xff000000,
+            0.5f,
             nullptr
         );
 

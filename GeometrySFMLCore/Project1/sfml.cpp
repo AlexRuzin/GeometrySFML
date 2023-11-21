@@ -90,6 +90,7 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
                 sf::CircleShape circle(i->radius);
                 circle.setFillColor(i->color);
                 circle.setPosition(i->posX, i->posY);
+                circle.setPointCount(SFML_CIRCLE_POINT_COUNT_ACCURACY);
 
                 renderWindow->draw(circle);
 
@@ -120,7 +121,7 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
     return;
 }
 
-SfmlError SfmlCoreWindow::DrawCircle(uint32_t x, uint32_t y, uint32_t radius, unsigned long color, SFML_OBJECT **objOut)
+SfmlError SfmlCoreWindow::DrawCircle(float x, float y, float radius, unsigned long color, SFML_OBJECT **objOut)
 {
     std::unique_lock<std::mutex> mlock(drawObjectSync);
 
@@ -144,7 +145,7 @@ SfmlError SfmlCoreWindow::DrawCircle(uint32_t x, uint32_t y, uint32_t radius, un
     return SFML_ERROR_OK;
 }
 
-SfmlError SfmlCoreWindow::DrawLine(uint32_t x, uint32_t y, uint32_t x2, uint32_t y2, 
+SfmlError SfmlCoreWindow::DrawLine(float x, float y, float x2, float y2,
     unsigned long color, unsigned long color2, SFML_OBJECT** objOut)
 {
     std::unique_lock<std::mutex> mlock(drawObjectSync);

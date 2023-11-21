@@ -3,6 +3,9 @@
 #include <Windows.h>
 #endif //_WIN32
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "sfml.h"
 #include "defines.h"
 #include "debug.h"
@@ -17,6 +20,7 @@ int main(void)
         return sfmlError;
     }
 
+#if 0
 #define ITER_LOOP 1000
     while (true) {
         Sleep(ITER_LOOP);
@@ -33,11 +37,36 @@ int main(void)
         sfmlWindow.DeleteDrawnObject(circleObj);
         sfmlWindow.DeleteDrawnObject(lineObj);
     }
+#endif
 
-    Sleep(2000);
+    Sleep(1000);
 
-    SFML_OBJECT *circleObj = nullptr;
-    sfmlWindow.DrawCircle(350,250, 100, 0xFF00FF, &circleObj);
+    SFML_OBJECT* circleObj = nullptr;
+    static const float circleCenterX = SFML_WINDOW_SIZE_X / 2.f;
+    static const float circleCenterY = SFML_WINDOW_SIZE_X / 2.f;
+    sfmlWindow.DrawCircle(
+        circleCenterX - SFML_CIRCLE_RADIUS,
+        circleCenterY - SFML_CIRCLE_RADIUS,
+        SFML_CIRCLE_RADIUS, 
+        SFML_CIRCLE_COLOR,
+        &circleObj);
+
+    // x = x_center + r * cos(theta)
+    // y = y_center + r * sin(theta)
+    for (uint32_t pointCount = 0; pointCount < SFML_CIRCLE_POINT_COUNT; pointCount++) {
+        const float angle = 2 * M_PI / SFML_CIRCLE_POINT_COUNT * pointCount;
+        const float x = circleCenterX + SFML_CIRCLE_RADIUS * cos(angle);
+        const float y = circleCenterY + SFML_CIRCLE_RADIUS * sin(angle);
+
+        sfmlWindow.DrawCircle(
+            x, y,
+            SFML_CIRCLE_POINT_RADIUS,
+            SFML_CIRCLE_POINT_COLOR,
+            nullptr
+        );
+
+        Sleep(100);
+    }
 
     Sleep(INFINITE);
 

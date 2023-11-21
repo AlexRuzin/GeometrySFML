@@ -30,14 +30,14 @@ typedef struct sfmlObjectSpecs {
     SFML_DRAW_OBJECT_TYPE                   type;
 
     // circle, line
-    uint32_t                                posX;
-    uint32_t                                posY;
+    float                                   posX;
+    float                                   posY;
 
     // line
-    uint32_t                                posX2;
-    uint32_t                                posY2;
+    float                                   posX2;
+    float                                   posY2;
 
-    uint32_t                                radius;
+    float                                   radius;
 
     sf::Color                               color;
     sf::Color                               color2;
@@ -80,10 +80,10 @@ public:
     SfmlError StopWindowThread(void);
 
     // Color is in hexadecimal format (and alpha)
-    SfmlError DrawCircle(uint32_t x, uint32_t y, uint32_t radius, unsigned long color, SFML_OBJECT **objOut);
+    SfmlError DrawCircle(float x, float y, float radius, unsigned long color, SFML_OBJECT **objOut);
 
-    SfmlError DrawLine(uint32_t x, uint32_t y, uint32_t x2, uint32_t y2, 
-        unsigned long color, unsigned long color2, SFML_OBJECT ** objOut);
+    SfmlError DrawLine(float x, float y, float x2, float y2,
+        unsigned long color, unsigned long color2, SFML_OBJECT **objOut);
 
     // Delete an object from the draw queue
     SfmlError DeleteDrawnObject(const SFML_OBJECT *obj);

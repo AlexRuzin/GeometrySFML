@@ -32,7 +32,7 @@ int main(void)
         return sfmlError;
     }
 
-    Sleep(10000);
+    Sleep(1000);
 
 #if 0
 #define ITER_LOOP 1000
@@ -96,7 +96,7 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
         );        
     }
 
-#if 1
+#if 0
     const unsigned long wheelLineColor = 0x01ffffff;
     for (uint32_t pointCount = 1; pointCount <= SFML_CIRCLE_POINT_COUNT; pointCount++) {
         const float angle = 2 * M_PI / SFML_CIRCLE_POINT_COUNT * pointCount;

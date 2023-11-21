@@ -11,7 +11,7 @@
 #define SFML_CIRCLE_POINT_RADIUS                        1.f
 #define SFML_CIRCLE_POINT_COLOR                         0xfffffffa
 
-#define SFML_CIRCLE_POINT_COUNT                         256
+#define SFML_CIRCLE_POINT_COUNT                         128
 
 // Defines the point accuracy of the circle, the greater, the rounder the circle
 #define SFML_CIRCLE_POINT_COUNT_ACCURACY                1000

@@ -42,7 +42,13 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
         return;
     }
 
-    renderWindow = new sf::RenderWindow(sf::VideoMode(winWidth, winHeight), winName);
+#if defined(SFML_ANTI_ALIASING)
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = SFML_ANTI_ALIASING_VAL;
+#endif //SFML_ANTI_ALIASING
+
+    renderWindow = new sf::RenderWindow(sf::VideoMode(winWidth, winHeight), winName, sf::Style::Default, settings);
+    renderWindow->setFramerateLimit(SFML_FRAME_RATE);
 
 #if 0
     sf::CircleShape circle(100);
@@ -64,39 +70,39 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
 #endif
 
     while (renderWindow->isOpen() && !windowThreadSync.IsSignaled()) {
-        std::unique_lock<std::mutex> mlock(drawObjectSync);
 
         // Event processing
         sf::Event event;
         while (renderWindow->pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
                 renderWindow->close();
+            }
         }
 
         // Rendering
         renderWindow->clear(sf::Color::Black);
 
-        for (std::list<SFML_OBJECT>::iterator i = drawObjectInput.begin(); i != drawObjectInput.end(); i++) {
-            if (!i->isDrawn) {
+        std::unique_lock<std::mutex> mlock(drawObjectSync);
+
+        for (std::list<SFML_OBJECT>::iterator i = drawObjectInput.begin(); i != drawObjectInput.end(); i++) {  
+            if (i->type == SFML_OBJ_CIRCLE) {
+                sf::CircleShape circle(i->radius);
+                circle.setFillColor(i->color);
+                circle.setPosition(i->posX, i->posY);
+
+                renderWindow->draw(circle);
+
+            } else if (i->type == SFML_OBJ_LINE) {
+                sf::VertexArray line(sf::Lines, 2);
+                line[0].position = sf::Vector2f(i->posX, i->posY);
+                line[1].position = sf::Vector2f(i->posX2, i->posY2);
                 
-                i->isDrawn = true;
+                line[0].color = i->color;
+                line[1].color = i->color2;
 
-                switch(i->type) {
-                case SFML_OBJ_CIRCLE:
-                    i->circle = new sf::CircleShape(i->radius);
-                    i->circle->setFillColor(i->color);
-                    i->circle->setPosition(i->posX, i->posY);
-
-                    break;
-                case SFML_OBJ_LINE:
-
-
-                    break;
-                default:
-                    break;
-                }               
-            }
+                renderWindow->draw(line);
+            }           
         }
 
 #if 0
@@ -123,12 +129,38 @@ SfmlError SfmlCoreWindow::DrawCircle(uint32_t x, uint32_t y, uint32_t radius, un
     }
 
     SFML_OBJECT obj;
-    obj.isDrawn = false;
     obj.type = SFML_OBJ_CIRCLE;
     obj.posX = x;
     obj.posY = y;
     obj.radius = radius;
     obj.color = convertHexToSfmlColor(color);
+
+    drawObjectInput.push_back(obj);
+
+    if (objOut) {
+        *objOut = &drawObjectInput.back();
+    }
+
+    return SFML_ERROR_OK;
+}
+
+SfmlError SfmlCoreWindow::DrawLine(uint32_t x, uint32_t y, uint32_t x2, uint32_t y2, 
+    unsigned long color, unsigned long color2, SFML_OBJECT** objOut)
+{
+    std::unique_lock<std::mutex> mlock(drawObjectSync);
+
+    if (!renderWindow) {
+        return SFML_ERROR_NOT_RUNNING;
+    }
+
+    SFML_OBJECT obj;
+    obj.type = SFML_OBJ_LINE;
+    obj.posX = x;
+    obj.posY = y;
+    obj.posX2 = x2;
+    obj.posY2 = y2;
+    obj.color = convertHexToSfmlColor(color);
+    obj.color2 = convertHexToSfmlColor (color2);
 
     drawObjectInput.push_back(obj);
 
@@ -147,7 +179,18 @@ SfmlError SfmlCoreWindow::DeleteDrawnObject(const SFML_OBJECT* obj)
         return SFML_ERROR_INPUT;
     }
 
-    
+    std::list<SFML_OBJECT>::iterator i;
+    for (i = drawObjectInput.begin(); i != drawObjectInput.end(); i++) {
+        if (&*i == obj) {
+            break;
+        }
+    }
+
+    if (i == drawObjectInput.end()) {
+        return SFML_ERROR_OBJECT_DOES_NOT_EXIST;
+    }
+
+    drawObjectInput.erase(i);
 
     return SFML_ERROR_OK;
 }

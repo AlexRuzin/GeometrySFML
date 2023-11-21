@@ -17,6 +17,28 @@ int main(void)
         return sfmlError;
     }
 
+#define ITER_LOOP 1000
+    while (true) {
+        Sleep(ITER_LOOP);
+
+        SFML_OBJECT* circleObj = nullptr;
+        sfmlWindow.DrawCircle(350, 250, 100, 0xFF00FF, &circleObj);        
+
+        Sleep(ITER_LOOP);
+
+        SFML_OBJECT *lineObj = nullptr;
+        sfmlWindow.DrawLine(100, 100, 300, 300, 0xffffff, 0xffffff, &lineObj);
+        Sleep(ITER_LOOP);
+
+        sfmlWindow.DeleteDrawnObject(circleObj);
+        sfmlWindow.DeleteDrawnObject(lineObj);
+    }
+
+    Sleep(2000);
+
+    SFML_OBJECT *circleObj = nullptr;
+    sfmlWindow.DrawCircle(350,250, 100, 0xFF00FF, &circleObj);
+
     Sleep(INFINITE);
 
     return 0;

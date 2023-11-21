@@ -32,7 +32,7 @@ int main(void)
         return sfmlError;
     }
 
-    Sleep(1000);
+    Sleep(10000);
 
 #if 0
 #define ITER_LOOP 1000
@@ -96,12 +96,12 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
         );        
     }
 
-#if 0
+#if 1
     const unsigned long wheelLineColor = 0x01ffffff;
-    for (uint32_t pointCount = 0; pointCount < SFML_CIRCLE_POINT_COUNT; pointCount++) {
+    for (uint32_t pointCount = 1; pointCount <= SFML_CIRCLE_POINT_COUNT; pointCount++) {
         const float angle = 2 * M_PI / SFML_CIRCLE_POINT_COUNT * pointCount;
-        const float x = circleCenterX + SFML_CIRCLE_RADIUS * cos(angle);
-        const float y = circleCenterY + SFML_CIRCLE_RADIUS * sin(angle);
+        const float x = circleCenterX + SFML_CIRCLE_RADIUS * sin(angle);
+        const float y = circleCenterY + SFML_CIRCLE_RADIUS * cos(angle);
 
         sfmlWindow.DrawCircle(
             x, y,
@@ -112,8 +112,8 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
 
         // Draw line from point(theta) to point(theta) + 1
         const float nextAngle = 2 * M_PI / SFML_CIRCLE_POINT_COUNT * ((uint32_t)pointCount + 1);
-        const float x2 = circleCenterX + SFML_CIRCLE_RADIUS * cos(nextAngle);
-        const float y2 = circleCenterY + SFML_CIRCLE_RADIUS * sin(nextAngle);
+        const float x2 = circleCenterX + SFML_CIRCLE_RADIUS * sin(nextAngle);
+        const float y2 = circleCenterY + SFML_CIRCLE_RADIUS * cos(nextAngle);
         sfmlWindow.DrawLine(
             x, y,
             x2, y2,
@@ -121,6 +121,7 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
             nullptr
         );
 
+#if 0
         // Draw line from point(theta) to center
         sfmlWindow.DrawLine(
             x, y,
@@ -128,13 +129,15 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
             wheelLineColor, wheelLineColor & 0xffffff,
             nullptr
         );
+#endif
 
         Sleep(10);
     }
 #endif
 
-    unsigned long lineColor = 0x00ffffff;
-    for (uint32_t circlePoint = 1; circlePoint <= SFML_CIRCLE_POINT_COUNT + 1000; circlePoint++) {
+    const unsigned long lineColorDefault = 0x00aabbcc;
+    unsigned long lineColor = lineColorDefault;
+    for (uint32_t circlePoint = 1; circlePoint <= SFML_CIRCLE_POINT_COUNT + 256; circlePoint++) {
         std::vector<uint32_t> knownPoints;
         uint32_t innerPoint = circlePoint;
 
@@ -162,16 +165,23 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
                 lineColor, lineColor,
                 nullptr
             );
-
+            
+#if 0
             lineColor -= 100;
 
             if (lineColor == 0x00) {
-                lineColor = 0x00ffffff;
+                lineColor = lineColorDefault;
             }
+#endif
 
             Sleep(5);
         }
 
+        lineColor -= 100;
+
+        if (lineColor == 0x00) {
+            lineColor = lineColorDefault;
+        }
         //lineColor = genRandInt(0x101010, 0xffffff);
     }
 

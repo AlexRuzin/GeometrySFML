@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <random>
 
+#include "main.h"
 #include "sfml.h"
 #include "defines.h"
 #include "debug.h"
@@ -21,6 +22,7 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow);
 
 void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow);
 
+bool getCircleIntersection(circleElement &originator, circleElement &intersected, float radius, float &outX, float &outY);
 uint32_t genRandInt(uint32_t min, uint32_t max);
 uint32_t sumOfDigits(uint32_t n, uint32_t base);
 
@@ -53,20 +55,76 @@ void drawCircleWithCrossSectionOuter(SfmlCoreWindow &sfmlWindow)
 
 }
 
+bool getCircleIntersection(circleElement &originator, circleElement &intersected, float radius, float &outX, float &outY)
+{
+    // Horizontal/vertical distance between circle center
+    const float dx = intersected.GetPosX() - originator.GetPosX();
+    const float dy = intersected.GetPosY() - originator.GetPosY();
+
+    // Distance between the two centers
+    const float distance = std::hypotf(dx, dy);
+
+    if (distance > (radius + radius)) {
+        return false;
+    }
+
+    // Distance between 0 and 2
+    const float a = ((radius * radius) - (radius * radius) + (distance * distance)) / (2.0 * distance);
+
+    // Point 2 coordinates
+    const float x2 = originator.GetPosX() + (dx * a / distance);
+    const float y2 = originator.GetPosY() + (dx * a / distance);
+
+    // Distance between point 2 to intersection
+    const float h = std::sqrtf((radius * radius) - (a * a));
+
+    // Intersection points
+    const float rx = -dy * (h / distance);
+    const float ry = dx * (h / distance);
+
+    outX = x2 - rx;
+    outY = y2 - ry;
+
+    return true;
+}
+
 void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
 {
     const float angle = M_PI / 3; //60 degrees
     const float centerX = (SFML_WINDOW_SIZE_X / 2.f) - SFML_FLOWER_RADIUS;
     const float centerY = (SFML_WINDOW_SIZE_Y / 2.f) - SFML_FLOWER_RADIUS;
 
+    std::vector<circleElement *> circleElements;    
+
     // central circle
-    sfmlWindow.DrawCircle(
-        centerX, centerY, 
-        SFML_FLOWER_RADIUS, 
+    circleElements.push_back(new circleElement{        
+        sfmlWindow,
+        circleElements.size(),
+        centerX, centerY,
+        SFML_FLOWER_RADIUS,
         SFML_FLOWER_CIRCLE_STARTING_BACKGROUND,
         SFML_FLOWER_CIRCLE_BOUNDARY_COLOR,
-        SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS,
-        nullptr);
+        SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS
+        });
+    circleElements.back()->DrawCircle();
+
+    for (uint16_t c = 0; c < 6; c++) {
+        circleElements.push_back(new circleElement{
+            sfmlWindow,
+            circleElements.size(),
+            circleElements.at(0)->GetPosX() + SFML_FLOWER_RADIUS * std::cosf(DEGREE_TO_RADIANS(60) * c),
+            circleElements.at(0)->GetPosY() + SFML_FLOWER_RADIUS * std::sinf(DEGREE_TO_RADIANS(60) * c),
+            SFML_FLOWER_RADIUS,
+            SFML_FLOWER_CIRCLE_STARTING_BACKGROUND,
+            SFML_FLOWER_CIRCLE_BOUNDARY_COLOR,
+            SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS
+        });
+        circleElements.back()->DrawCircle();
+
+        Sleep(10);
+    }
+
+#if 0
 
     for (uint16_t i = 0; i < 6; i++) {
         const float x = centerX + SFML_FLOWER_RADIUS * cos(DEGREE_TO_RADIANS(60) * i);
@@ -82,6 +140,7 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
 
         Sleep(100);
     }
+#endif
 
 #if 0
     float x, y;
@@ -133,7 +192,7 @@ void drawVortexIter(SfmlCoreWindow &sfmlWindow)
     // y = y_center + r * sin(theta)
     // Draw points
     for (uint32_t pointCount = 1; pointCount <= SFML_CIRCLE_POINT_COUNT; pointCount++) {
-        const float angle = 2 * M_PI / SFML_CIRCLE_POINT_COUNT * pointCount;
+        const float angle = 2 * M_PI / SFML_CIRCLE_POINT_COUNT * (float)pointCount;
         const float x = circleCenterX + SFML_CIRCLE_RADIUS * sin(angle);
         const float y = circleCenterY + SFML_CIRCLE_RADIUS * cos(angle);
 

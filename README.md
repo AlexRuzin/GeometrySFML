@@ -5,7 +5,6 @@ Experiment with drawing a cardioid using SFML. Algorithm is based on the Sacred 
 ![alt text](https://github.com/AlexRuzin/GeometrySFML/blob/main/Images/128_wheel_static.png?raw=true)
 
 #### 128-point iterable cardioid
-https://github.com/AlexRuzin/GeometrySFML/blob/main/Images/128_wheel_iterable.gif?raw=true
 ![alt text](https://github.com/AlexRuzin/GeometrySFML/blob/main/Images/128_wheel_iterable.gif?raw=true)
 
 #### Classic 369 pattern, color changes show repeating of the pattern

@@ -88,6 +88,8 @@ public:
     // Delete an object from the draw queue
     SfmlError DeleteDrawnObject(const SFML_OBJECT *obj);
 
+    SfmlError DeleteAllDrawnObject(void);
+
 private:
     void SFML_THREAD windowThread(void);
 

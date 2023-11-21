@@ -81,6 +81,7 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
         }
 
         // Rendering
+        //renderWindow->clear(convertHexToSfmlColor(0xfdf5e8));
         renderWindow->clear(sf::Color::Black);
 
         std::unique_lock<std::mutex> mlock(drawObjectSync);
@@ -192,6 +193,15 @@ SfmlError SfmlCoreWindow::DeleteDrawnObject(const SFML_OBJECT* obj)
     }
 
     drawObjectInput.erase(i);
+
+    return SFML_ERROR_OK;
+}
+
+SfmlError SfmlCoreWindow::DeleteAllDrawnObject(void)
+{
+    std::unique_lock<std::mutex> mlock(drawObjectSync);
+
+    drawObjectInput.clear();
 
     return SFML_ERROR_OK;
 }

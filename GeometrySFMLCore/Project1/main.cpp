@@ -25,6 +25,9 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow);
 bool getCircleIntersection(circleElement &originator, circleElement &intersected, float radius, float &outX, float &outY);
 uint32_t genRandInt(uint32_t min, uint32_t max);
 uint32_t sumOfDigits(uint32_t n, uint32_t base);
+float negateFloat(float n);
+unsigned long increaseColorGradient(unsigned long color, uint8_t increment);
+unsigned long iterateRgbThroughLightGradient(unsigned long color, float increment);
 
 int main(void)
 {
@@ -94,6 +97,7 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
     uint16_t firstIntersect = 0;
     circleElement *newElement = nullptr;
 
+    // Determines initial positions
     for (uint16_t roundCount = 0; roundCount < SFML_FLOWER_COUNT; roundCount++) {
         const float offset = !roundCount ? 0 : 360.f / (roundCount * 6);
 
@@ -107,12 +111,10 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
                 SFML_FLOWER_CIRCLE_BOUNDARY_COLOR,
                 SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS
             };
-            newElement->DrawCircle();
             circleElements.push_back(newElement);
         }
 
         for (uint16_t i = 0; i < roundCount * 6; i++) {
-
             if (roundCount == 1 && i == 0) {
                 newElement = new circleElement{
                     sfmlWindow,
@@ -143,10 +145,9 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
                 };
             }
 
-            newElement->DrawCircle();
             circleElements.push_back(newElement);
 
-            const float vertexCalc = std::fmodf(newElement->GetTheta() + offset, 60.f);
+            const float vertexCalc = std::fmodf(newElement->GetTheta() + offset, 60.f) > 1;
 
             if (i == roundCount * 6 - 1) {
                 firstIntersect++;
@@ -154,9 +155,49 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
             else if (vertexCalc) {
                 firstIntersect++;
             }
-
-            Sleep(500);
         }
+    }
+
+    Sleep(100);
+
+
+    float visualRadius = SFML_FLOWER_RADIUS;
+    float visualRadiusInc = SFML_FLOWER_VISUAL_RADIUS_INCREMENT;
+    uint16_t pauseIterations = 0;
+    const uint16_t pauseIterationsMax = 5;
+    const uint16_t timerSleep = 1;
+
+    unsigned long currColor = SFML_FLOWER_CIRCLE_STARTING_BACKGROUND;
+    while (true)
+    {
+        // Draw circles
+        for (std::vector<circleElement*>::const_iterator i = circleElements.begin(); i != circleElements.end(); i++) {            
+            (*i)->SetVisualRadius(visualRadius);
+            (*i)->SetBackgroundColor(currColor);
+            (*i)->DrawCircle();
+        }
+
+        sfmlWindow.SignalDraw();
+
+        //currColor = increaseColorGradient(currColor, 5);
+        currColor = iterateRgbThroughLightGradient(currColor, 2.f); // Convert to HSL and preserve alpha
+
+        if (circleElements.back()->GetVisualRadius() == SFML_FLOWER_RADIUS) {            
+            pauseIterations++;
+            if (pauseIterations == pauseIterationsMax) {
+                pauseIterations = 0;
+            } else {
+                Sleep(timerSleep);
+                continue;
+            }
+        }        
+
+        visualRadius += visualRadiusInc;
+        if (visualRadius >= SFML_FLOWER_VISUAL_RADIUS_MAX || visualRadius <= SFML_FLOWER_VISUAL_RADIUS_MIN) {
+            visualRadiusInc = negateFloat(visualRadiusInc);
+        }             
+
+        Sleep(timerSleep);
     }
 }
 
@@ -387,4 +428,162 @@ uint32_t sumOfDigits(uint32_t n, uint32_t base)
     }
 
     return out;
+}
+
+//https://gist.github.com/ciembor/1494530
+static HSL convertRgbToHsl(float r, float g, float b)
+{
+    HSL hsl;
+
+    // Normalize RGB values
+    float normR = r / 255.0;
+    float normG = g / 255.0;
+    float normB = b / 255.0;
+
+    // Find the maximum and minimum values
+    float maxVal = std::fmax(normR, std::fmax(normG, normB));
+    float minVal = std::fmin(normR, std::fmin(normG, normB));
+
+    // Calculate lightness
+    hsl.l = (maxVal + minVal) / 2.0;
+
+    // Check if the color is grayscale
+    if (maxVal == minVal) {
+        hsl.h = 0.0;
+        hsl.s = 0.0;
+    }
+    else {
+        // Calculate saturation
+        if (hsl.l < 0.5) {
+            hsl.s = (maxVal - minVal) / (maxVal + minVal);
+        }
+        else {
+            hsl.s = (maxVal - minVal) / (2.0 - maxVal - minVal);
+        }
+
+        // Calculate hue
+        float delta = maxVal - minVal;
+        if (maxVal == normR) {
+            hsl.h = (normG - normB) / delta;
+        }
+        else if (maxVal == normG) {
+            hsl.h = 2.0 + (normB - normR) / delta;
+        }
+        else {
+            hsl.h = 4.0 + (normR - normG) / delta;
+        }
+
+        hsl.h *= 60.0;
+        if (hsl.h < 0.0) {
+            hsl.h += 360.0;
+        }
+    }
+
+    return hsl;
+}
+
+//https://gist.github.com/ciembor/1494530
+float converHue2rgb(float v1, float v2, float vH)
+{
+    if (vH < 0)
+        vH += 1;
+
+    if (vH > 1)
+        vH -= 1;
+
+    if ((6 * vH) < 1)
+        return (v1 + (v2 - v1) * 6 * vH);
+
+    if ((2 * vH) < 1)
+        return v2;
+
+    if ((3 * vH) < 2)
+        return (v1 + (v2 - v1) * ((2.0f / 3) - vH) * 6);
+
+    return v1;
+
+}
+
+//https://gist.github.com/ciembor/1494530
+//https://www.programmingalgorithms.com/algorithm/hsl-to-rgb/c/
+unsigned long convertHsl2rgb(HSL hsl) {
+    uint8_t r, g, b;
+
+    if (hsl.s == 0)
+    {
+        r = g = b = (unsigned char)(hsl.l * 255);
+    }
+    else
+    {
+        float v1, v2;
+        float hue = (float)hsl.h / 360;
+
+        v2 = (hsl.l < 0.5) ? (hsl.l * (1 + hsl.s)) : ((hsl.l + hsl.s) - (hsl.l * hsl.s));
+        v1 = 2 * hsl.l - v2;
+
+        r = (unsigned char)(255 * converHue2rgb(v1, v2, hue + (1.0f / 3)));
+        g = (unsigned char)(255 * converHue2rgb(v1, v2, hue));
+        b = (unsigned char)(255 * converHue2rgb(v1, v2, hue - (1.0f / 3)));
+    }
+
+    return  (0x00 << 24) | (r << 16) | (g << 8) | b;
+}
+
+unsigned long iterateRgbThroughLightGradient(unsigned long color, float increment)
+{
+    uint8_t a = (color >> 24) & 0xff;
+    uint8_t r = (color >> 16) & 0xff;
+    uint8_t g = (color >> 8) & 0xff;
+    uint8_t b = color & 0xff;
+
+    // Convert to HSL and increase hue by 1
+    HSL hsl = convertRgbToHsl(r, g, b);
+    hsl.h += hsl.h > 360.f ? -360.f + increment : increment;
+
+    unsigned long rgbOut = (a << 24) | convertHsl2rgb(hsl);
+
+    system("cls");
+    printf("rgb color: 0x%08x\th: %f, s: %f, l: %f", rgbOut, hsl.h, hsl.s, hsl.l);
+
+    return rgbOut;
+}
+
+static int8_t gradientInverse = 1;
+unsigned long increaseColorGradient(unsigned long color, uint8_t increment)
+{
+    uint8_t a = (color >> 24) & 0xff;
+    uint8_t r = (color >> 16) & 0xff;
+    uint8_t g = (color >> 8) & 0xff;
+    uint8_t b = color & 0xff;
+
+    if (b  >= 0xff) {
+        if (g >= 0xff) {
+            if (r >= 0xff) {
+                gradientInverse = -gradientInverse;
+                r--;
+            } else {
+                r += increment * gradientInverse;
+            }
+        } else {
+            g += increment * gradientInverse;
+        }
+    } else {
+        b += increment * gradientInverse;
+    }
+
+    unsigned long out = (a << 24) | (r << 16) | (g << 8) | b;
+
+    system("cls");
+    printf("0x%08x", out);
+
+
+    return out;
+}
+
+float negateFloat(float n)
+{
+    union { unsigned x; float y; } u;
+    u.y = n;
+    u.x ^= 0x80000000;
+    return u.y;
 }

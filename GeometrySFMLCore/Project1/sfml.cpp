@@ -69,6 +69,8 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
     radiusLine.setOrigin(0, 1); // Set origin to one of the ends of the line
 #endif
 
+    signalDoDraw.ResetSignal();
+
     while (renderWindow->isOpen() && !windowThreadSync.IsSignaled()) {
 
         // Event processing
@@ -80,11 +82,15 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
             }
         }
 
+        if (!signalDoDraw.IsSignaled()) {
+            continue;
+        }
+
         // Rendering
         //renderWindow->clear(convertHexToSfmlColor(0xfdf5e8));
-        renderWindow->clear(winBackgroundColor);
+        std::unique_lock<std::mutex> mlock(drawObjectLock);
 
-        std::unique_lock<std::mutex> mlock(drawObjectSync);
+        renderWindow->clear(winBackgroundColor);
 
         for (std::list<SFML_OBJECT>::iterator i = drawObjectInput.begin(); i != drawObjectInput.end(); i++) {  
             if (i->type == SFML_OBJ_CIRCLE) {
@@ -112,13 +118,9 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
                 renderWindow->draw(line);
             }           
         }
-
-#if 0
-        renderWindow->draw(circle);
-        renderWindow->draw(radiusLine);
-#endif
-
         renderWindow->display();
+
+        signalDoDraw.ResetSignal();
     }
 
     renderWindow->close();
@@ -134,7 +136,7 @@ SfmlError SfmlCoreWindow::DrawCircle(
     float thickness,
     SFML_OBJECT **objOut)
 {
-    std::unique_lock<std::mutex> mlock(drawObjectSync);
+    std::unique_lock<std::mutex> mlock(drawObjectLock);
 
     if (!renderWindow) {
         return SFML_ERROR_NOT_RUNNING;
@@ -161,7 +163,7 @@ SfmlError SfmlCoreWindow::DrawCircle(
 SfmlError SfmlCoreWindow::DrawLine(float x, float y, float x2, float y2,
     unsigned long color, unsigned long color2, SFML_OBJECT** objOut)
 {
-    std::unique_lock<std::mutex> mlock(drawObjectSync);
+    std::unique_lock<std::mutex> mlock(drawObjectLock);
 
     if (!renderWindow) {
         return SFML_ERROR_NOT_RUNNING;
@@ -187,7 +189,7 @@ SfmlError SfmlCoreWindow::DrawLine(float x, float y, float x2, float y2,
 
 SfmlError SfmlCoreWindow::DeleteDrawnObject(const SFML_OBJECT* obj)
 {
-    std::unique_lock<std::mutex> mlock(drawObjectSync);
+    std::unique_lock<std::mutex> mlock(drawObjectLock);
 
     if (!obj) {
         return SFML_ERROR_INPUT;
@@ -211,7 +213,7 @@ SfmlError SfmlCoreWindow::DeleteDrawnObject(const SFML_OBJECT* obj)
 
 SfmlError SfmlCoreWindow::DeleteAllDrawnObject(void)
 {
-    std::unique_lock<std::mutex> mlock(drawObjectSync);
+    std::unique_lock<std::mutex> mlock(drawObjectLock);
 
     drawObjectInput.clear();
 

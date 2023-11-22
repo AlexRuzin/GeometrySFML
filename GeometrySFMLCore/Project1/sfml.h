@@ -6,6 +6,7 @@
 
 #include <string>
 #include <thread>
+#include <chrono>
 #include <memory>
 #include <list>
 #include <mutex>
@@ -58,9 +59,10 @@ private:
 
     sf::RenderWindow                            *renderWindow;
 
-    std::mutex                                  drawObjectSync;
-    std::list<SFML_OBJECT>                      drawObjectInput;
+    EventSignal                                 signalDoDraw;
+    std::mutex                                  drawObjectLock;
 
+    std::list<SFML_OBJECT>                      drawObjectInput;
 public:
     SfmlCoreWindow(float winWidth, float winHeight, std::string winName, unsigned long backgroundColor) :
         winWidth(winWidth),
@@ -71,7 +73,7 @@ public:
         renderWindow(nullptr),
         windowThreadObj(nullptr)
     {
-
+        signalDoDraw.ResetSignal();
     }
 
     ~SfmlCoreWindow(void)
@@ -97,6 +99,14 @@ public:
     SfmlError DeleteDrawnObject(const SFML_OBJECT *obj);
 
     SfmlError DeleteAllDrawnObject(void);
+
+    // Blocking function to draw items
+    void SignalDraw(void)
+    {
+        signalDoDraw.SetSignal();
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        signalDoDraw.WaitForSignal();
+    }
 
 private:
     void SFML_THREAD windowThread(void);

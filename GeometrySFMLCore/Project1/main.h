@@ -9,6 +9,9 @@
 #define DEGREE_TO_RADIANS(x) (x * M_PI / 180)
 #define RADIANS_TO_DEGREE(x) (x * (180.f / M_PI))
 
+#define MIN(a,b) ((a)<(b)?(a):(b))
+#define MAX(a,b) ((a)>(b)?(a):(b))
+
 static const float centerX = SFML_WINDOW_SIZE_X / 2.f;
 static const float centerY = SFML_WINDOW_SIZE_Y / 2.f;
 
@@ -19,7 +22,7 @@ private:
     const float                         radius;
 
 
-    const unsigned long                 backgroundColor;
+    unsigned long                       backgroundColor;
     const unsigned long                 edgeColor;
 
     const float                         thickness;
@@ -30,6 +33,10 @@ private:
 
     const uint64_t                      index;
     float                               theta; // angle from the origin point (0, 0)
+
+    // Visual radius of the circle, not to be confused with radius that is the actual radius
+    //  This radius just changes the visual size of the circle
+    float                               visualRadius;
 
 public:
     circleElement(
@@ -42,7 +49,7 @@ public:
         coreWindow(coreWindow),
         
         posX(x), posY(y),
-        radius(radius),
+        radius(radius), visualRadius(radius),
         backgroundColor(backgroundColor), edgeColor(edgeColor),
         thickness(thickness),
 
@@ -64,11 +71,16 @@ public:
 
     void DrawCircle(void)
     {
+        if (objectPtr) {
+            coreWindow.DeleteDrawnObject(objectPtr);
+            objectPtr = nullptr;
+        }
+
         SFML_OBJECT *ptr = nullptr;
 
         coreWindow.DrawCircle(
             posX, posY,
-            radius,
+            visualRadius,
             backgroundColor,
             edgeColor,
             thickness,
@@ -92,6 +104,31 @@ public:
         return theta;
     }
 
+    void IncVisualRadius(float n)
+    {
+        visualRadius += n;
+    }
+
+    void SetVisualRadius(float n)
+    {
+        visualRadius = n;
+    }
+
+    float GetVisualRadius(void) const
+    {
+        return visualRadius;
+    }
+
+    void SetBackgroundColor(unsigned long color)
+    {
+        backgroundColor = color;
+    }
+
+    unsigned long GetBackgroundColor(unsigned long color) const
+    {
+        return backgroundColor;
+    }
+
 private:
     static float getCircleTheta(float x, float y)
     {
@@ -109,3 +146,9 @@ private:
         return theta;
     }
 };
+
+typedef struct {
+    float h;
+    float s;
+    float l;
+} HSL, * PHSL;

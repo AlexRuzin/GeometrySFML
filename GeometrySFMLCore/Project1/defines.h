@@ -16,16 +16,20 @@
 #define SFML_CIRCLE_POINT_RADIUS                        1.f
 #define SFML_CIRCLE_POINT_COLOR                         0xfffffffa
 
-#define SFML_CIRCLE_POINT_COUNT                         128
+#define SFML_CIRCLE_POINT_COUNT                         64
 
 //
 // Flower of life
 //
-#define SFML_FLOWER_COUNT                               4
-#define SFML_FLOWER_RADIUS                              50.f
-#define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           1.f
-#define SFML_FLOWER_CIRCLE_STARTING_BACKGROUND          0x1fff6ec7
-#define SFML_FLOWER_CIRCLE_BOUNDARY_COLOR               0x00000000
+#define SFML_FLOWER_RADIUS                              40.f
+#define SFML_FLOWER_VISUAL_RADIUS_MIN                   SFML_FLOWER_RADIUS - (SFML_FLOWER_RADIUS / 2.0f)//52.f
+#define SFML_FLOWER_VISUAL_RADIUS_MAX                   SFML_FLOWER_RADIUS + (SFML_FLOWER_RADIUS / 2.0f)//78.f
+#define SFML_FLOWER_VISUAL_RADIUS_INCREMENT             0.1f
+
+#define SFML_FLOWER_COUNT                               32
+#define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           0.5f
+#define SFML_FLOWER_CIRCLE_STARTING_BACKGROUND          0x1f7f00ff // alpha, r, g, b
+#define SFML_FLOWER_CIRCLE_BOUNDARY_COLOR               0x71000000
 
 
 //
@@ -33,12 +37,12 @@
 //
 
 // Defines the point accuracy of the circle, the greater, the rounder the circle
-#define SFML_CIRCLE_POINT_COUNT_ACCURACY                1000
+#define SFML_CIRCLE_POINT_COUNT_ACCURACY                64
 
 #define SFML_ANTI_ALIASING
 
 #if defined(SFML_ANTI_ALIASING)
-#define SFML_ANTI_ALIASING_VAL                          10
+#define SFML_ANTI_ALIASING_VAL                          8
 #endif //SFML_ANTI_ALIASING
 
 #define SFML_FRAME_RATE                                 60

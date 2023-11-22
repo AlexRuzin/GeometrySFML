@@ -142,8 +142,8 @@ SfmlError SfmlCoreWindow::DrawCircle(
 
     SFML_OBJECT obj;
     obj.type = SFML_OBJ_CIRCLE;
-    obj.posX = x;
-    obj.posY = y;
+    obj.posX = x - radius;
+    obj.posY = y - radius;
     obj.radius = radius;
     obj.thickness = thickness;
     obj.color1 = convertHexToSfmlColor(backgroundColor);

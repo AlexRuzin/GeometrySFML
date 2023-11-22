@@ -21,8 +21,8 @@
 //
 // Flower of life
 //
+#define SFML_FLOWER_COUNT                               4
 #define SFML_FLOWER_RADIUS                              50.f
-#define SFML_FLOWER_LAYERS                              3
 #define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           1.f
 #define SFML_FLOWER_CIRCLE_STARTING_BACKGROUND          0x1fff6ec7
 #define SFML_FLOWER_CIRCLE_BOUNDARY_COLOR               0x00000000

@@ -48,8 +48,8 @@ typedef struct sfmlObjectSpecs {
 
 class SfmlCoreWindow {
 private:
-    const uint32_t                              winWidth;
-    const uint32_t                              winHeight;
+    const float                                 winWidth;
+    const float                                 winHeight;
     const std::string                           winName;
     sf::Color                                   winBackgroundColor;
 
@@ -62,7 +62,7 @@ private:
     std::list<SFML_OBJECT>                      drawObjectInput;
 
 public:
-    SfmlCoreWindow(uint32_t winWidth, uint32_t winHeight, std::string winName, unsigned long backgroundColor) :
+    SfmlCoreWindow(float winWidth, float winHeight, std::string winName, unsigned long backgroundColor) :
         winWidth(winWidth),
         winHeight(winHeight),
         winName(winName),

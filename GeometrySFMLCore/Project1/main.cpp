@@ -164,7 +164,7 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
     float visualRadius = SFML_FLOWER_RADIUS;
     float visualRadiusInc = SFML_FLOWER_VISUAL_RADIUS_INCREMENT;
     uint16_t pauseIterations = 0;
-    const uint16_t pauseIterationsMax = 5;
+    const uint16_t pauseIterationsMax = 1;
     const uint16_t timerSleep = 1;
 
     unsigned long currColor = SFML_FLOWER_CIRCLE_STARTING_BACKGROUND;
@@ -173,7 +173,7 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
         // Compute vector of gradients based on round
         std::vector<unsigned long> gradientsPerRound;
         for (uint16_t i = 0; i < SFML_FLOWER_COUNT; i++) {
-            gradientsPerRound.push_back(iterateRgbThroughLightGradient(currColor, i * 5.0f));
+            gradientsPerRound.push_back(iterateRgbThroughLightGradient(currColor, i * SFML_FLOWER_COLOR_GRADIENT_INCREMENT));
         }
 
         // Draw circles

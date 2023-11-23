@@ -21,15 +21,17 @@
 //
 // Flower of life
 //
-#define SFML_FLOWER_RADIUS                              60.f
+#define SFML_FLOWER_RADIUS                              50.f
 #define SFML_FLOWER_VISUAL_RADIUS_MIN                   SFML_FLOWER_RADIUS - (SFML_FLOWER_RADIUS / 2.0f)//52.f
 #define SFML_FLOWER_VISUAL_RADIUS_MAX                   SFML_FLOWER_RADIUS + (SFML_FLOWER_RADIUS / 2.0f)//78.f
-#define SFML_FLOWER_VISUAL_RADIUS_INCREMENT             0.1f
+#define SFML_FLOWER_VISUAL_RADIUS_INCREMENT             0.5f
 
-#define SFML_FLOWER_COUNT                               16 //rounds
-#define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           1.0f
+#define SFML_FLOWER_COUNT                               24 //rounds
+#define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           4.0f
 #define SFML_FLOWER_CIRCLE_STARTING_BACKGROUND          0x1f7f00ff // alpha, r, g, b
-#define SFML_FLOWER_CIRCLE_BOUNDARY_COLOR               0x71000000
+#define SFML_FLOWER_CIRCLE_BOUNDARY_COLOR               0x01000000
+
+#define SFML_FLOWER_COLOR_GRADIENT_INCREMENT            10.0f
 
 
 //

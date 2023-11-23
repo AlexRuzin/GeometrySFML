@@ -4,6 +4,9 @@ Experiment with drawing a cardioid using SFML. Algorithm is based on the Sacred 
 #### "Flower of Life" simulation using radii iteration
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/1b56tz7Yu_E/0.jpg)](https://www.youtube.com/watch?v=1b56tz7Yu_E)
 
+#### "Flower of Life" simulation using radii iteration - Colour version
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/DjVl4fA_XlI/0.jpg)](https://www.youtube.com/watch?v=DjVl4fA_XlI)
+
 #### 128-point cardioid, white lines
 ![alt text](https://github.com/AlexRuzin/GeometrySFML/blob/main/Images/128_wheel_static.png?raw=true)
 

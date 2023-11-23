@@ -164,32 +164,37 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
     float visualRadius = SFML_FLOWER_RADIUS;
     float visualRadiusInc = SFML_FLOWER_VISUAL_RADIUS_INCREMENT;
     uint16_t pauseIterations = 0;
-    const uint16_t pauseIterationsMax = 1;
-    const uint16_t timerSleep = 1;
+    const uint16_t pauseIterationsMax = SFML_FLOWER_PAUSE_AT_INTERSECTION;
+    const uint16_t timerSleep = SFML_FLOWER_PRIMARY_INTERVAL_MS;
 
     unsigned long currColor = SFML_FLOWER_CIRCLE_STARTING_BACKGROUND;
     while (true)
     {
         // Compute vector of gradients based on round
+        // Compute vector of radius to round
         std::vector<unsigned long> gradientsPerRound;
+        std::vector<float> radiusPerRound;
+
         for (uint16_t i = 0; i < SFML_FLOWER_COUNT; i++) {
-            gradientsPerRound.push_back(iterateRgbThroughLightGradient(currColor, i * SFML_FLOWER_COLOR_GRADIENT_INCREMENT));
+            gradientsPerRound.push_back(iterateRgbThroughLightGradient(currColor, 
+                SFML_FLOWER_COLOR_GRADIENT_INCREMENT == 0.f ? 0.f : i * SFML_FLOWER_COLOR_GRADIENT_INCREMENT));
+
+            radiusPerRound.push_back(SFML_FLOWER_RADIUS_PER_ROUND_SCALE != 1.f 
+                ? visualRadius + (i * SFML_FLOWER_RADIUS_PER_ROUND_SCALE) : visualRadius);
         }
 
         // Draw circles
         for (std::vector<circleElement*>::const_iterator i = circleElements.begin(); i != circleElements.end(); i++) { 
-
-            // Get HSL gradient from round
             (*i)->SetBackgroundColor(gradientsPerRound.at((*i)->GetRound()));
+            (*i)->SetVisualRadius(radiusPerRound.at((*i)->GetRound()));
 
-            (*i)->SetVisualRadius(visualRadius);            
             (*i)->DrawCircle();
         }
 
         sfmlWindow.SignalDraw();
 
         //currColor = increaseColorGradient(currColor, 5);
-        currColor = iterateRgbThroughLightGradient(currColor, 2.f); // Convert to HSL and preserve alpha
+        currColor = iterateRgbThroughLightGradient(currColor, SFML_FLOWER_COLOR_GRADIENT_INCREMENT); // Convert to HSL and preserve alpha
 
         if (circleElements.back()->GetVisualRadius() == SFML_FLOWER_RADIUS) {            
             pauseIterations++;
@@ -201,10 +206,10 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
             }
         }        
 
-        visualRadius += visualRadiusInc;
+        visualRadius += SFML_FLOWER_VISUAL_RADIUS_INCREMENT ? visualRadiusInc : SFML_FLOWER_VISUAL_RADIUS_INCREMENT;
         if (visualRadius >= SFML_FLOWER_VISUAL_RADIUS_MAX || visualRadius <= SFML_FLOWER_VISUAL_RADIUS_MIN) {
             visualRadiusInc = negateFloat(visualRadiusInc);
-        }             
+        }     
 
         Sleep(timerSleep);
     }
@@ -540,6 +545,10 @@ unsigned long convertHsl2rgb(HSL hsl) {
 
 unsigned long iterateRgbThroughLightGradient(unsigned long color, float increment)
 {
+    if (increment == 0.0f) {
+        return color;
+    }
+
     uint8_t a = (color >> 24) & 0xff;
     uint8_t r = (color >> 16) & 0xff;
     uint8_t g = (color >> 8) & 0xff;

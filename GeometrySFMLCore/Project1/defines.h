@@ -23,27 +23,33 @@
 //
 #define SFML_FLOWER_RADIUS                              50.f
 
-#define SFML_FLOWER_COUNT                               16 //rounds
-#define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           2.5f
-#define SFML_FLOWER_CIRCLE_STARTING_BACKGROUND          0x1f1a1a1a // alpha, r, g, b
+#define SFML_FLOWER_COUNT                               20 //rounds
+#define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           1.5f
+#define SFML_FLOWER_CIRCLE_STARTING_BACKGROUND          0x0f1a3afa // alpha, r, g, b
 #define SFML_FLOWER_CIRCLE_BOUNDARY_COLOR               0x71000000
 
 // Primary re-draw timer interval (ms)
 #define SFML_FLOWER_PRIMARY_INTERVAL_MS                 1
 
 // Change color based on round, set to 0.f to disable
-#define SFML_FLOWER_COLOR_GRADIENT_INCREMENT            10.0f
+// Controls hue, which is measured in degurees from 0-360
+// Therefore changing this value is the increment value of HSL hue
+// Very important note: 
+// The RGB values of SFML_FLOWER_CIRCLE_STARTING_BACKGROUND must be different
+// for this to work, i.e. if it is set to 0x1f050505, where r = g = b,
+// adjusting hue will not work (for some reason that I have yet to fix)
+#define SFML_FLOWER_COLOR_GRADIENT_INCREMENT            1.1f
 
 // Defines visual radius growth of all circles. to disable set to 0.0f
-#define SFML_FLOWER_VISUAL_RADIUS_INCREMENT             0.0f
+#define SFML_FLOWER_VISUAL_RADIUS_INCREMENT             0.1f
 #define SFML_FLOWER_VISUAL_RADIUS_MIN                   SFML_FLOWER_RADIUS - (SFML_FLOWER_RADIUS / 2.0f)//52.f
 #define SFML_FLOWER_VISUAL_RADIUS_MAX                   SFML_FLOWER_RADIUS + (SFML_FLOWER_RADIUS / 2.0f)//78.f
 
 // Radius change per scale, set to 1.f to disable
-#define SFML_FLOWER_RADIUS_PER_ROUND_SCALE              1.0f
+#define SFML_FLOWER_RADIUS_PER_ROUND_SCALE              2.5f
 
 // Pause at flower of life intersection, set to 1 to disable
-#define SFML_FLOWER_PAUSE_AT_INTERSECTION               1
+#define SFML_FLOWER_PAUSE_AT_INTERSECTION               5
 
 //
 // Visual definitions

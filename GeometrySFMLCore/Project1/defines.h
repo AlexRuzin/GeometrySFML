@@ -21,11 +21,11 @@
 //
 // Flower of life
 //
-#define SFML_FLOWER_RADIUS                              55.f
+#define SFML_FLOWER_RADIUS                              100.f
 
-#define SFML_FLOWER_COUNT                               24//rounds
-#define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           1.5f
-#define SFML_FLOWER_CIRCLE_STARTING_BACKGROUND          0x2f1a3afa // alpha, r, g, b
+#define SFML_FLOWER_COUNT                               10//rounds
+#define SFML_FLOWER_CIRCLE_BOUNDARY_THICKNESS           2.89f
+#define SFML_FLOWER_CIRCLE_STARTING_BACKGROUND          0x1f5f1aaa // alpha, r, g, b
 #define SFML_FLOWER_CIRCLE_BOUNDARY_COLOR               0xff000000
 
 // Primary re-draw timer interval (ms)
@@ -38,7 +38,7 @@
 // The RGB values of SFML_FLOWER_CIRCLE_STARTING_BACKGROUND must be different
 // for this to work, i.e. if it is set to 0x1f050505, where r = g = b,
 // adjusting hue will not work (for some reason that I have yet to fix)
-#define SFML_FLOWER_COLOR_GRADIENT_INCREMENT            1.01f
+#define SFML_FLOWER_COLOR_GRADIENT_INCREMENT            0.01f
 
 // Defines visual radius growth of all circles. to disable set to 0.0f
 #define SFML_FLOWER_VISUAL_RADIUS_INCREMENT             0.1f

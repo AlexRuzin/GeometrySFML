@@ -118,7 +118,7 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
             if (roundCount == 1 && i == 0) {
                 newElement = new circleElement{
                     sfmlWindow,
-                    circleElements.size(),
+                    roundCount,
                     centerX + SFML_FLOWER_RADIUS * std::cosf(0.f),
                     centerY + SFML_FLOWER_RADIUS * std::sinf(0.f),
                     SFML_FLOWER_RADIUS,
@@ -135,7 +135,7 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
                 );
                 newElement = new circleElement{
                     sfmlWindow,
-                    circleElements.size(),
+                    roundCount,
                     intersectX,
                     intersectY,
                     SFML_FLOWER_RADIUS,
@@ -170,10 +170,19 @@ void drawFlowerOfLife(SfmlCoreWindow &sfmlWindow)
     unsigned long currColor = SFML_FLOWER_CIRCLE_STARTING_BACKGROUND;
     while (true)
     {
+        // Compute vector of gradients based on round
+        std::vector<unsigned long> gradientsPerRound;
+        for (uint16_t i = 0; i < SFML_FLOWER_COUNT; i++) {
+            gradientsPerRound.push_back(iterateRgbThroughLightGradient(currColor, i * 5.0f));
+        }
+
         // Draw circles
-        for (std::vector<circleElement*>::const_iterator i = circleElements.begin(); i != circleElements.end(); i++) {            
-            (*i)->SetVisualRadius(visualRadius);
-            (*i)->SetBackgroundColor(currColor);
+        for (std::vector<circleElement*>::const_iterator i = circleElements.begin(); i != circleElements.end(); i++) { 
+
+            // Get HSL gradient from round
+            (*i)->SetBackgroundColor(gradientsPerRound.at((*i)->GetRound()));
+
+            (*i)->SetVisualRadius(visualRadius);            
             (*i)->DrawCircle();
         }
 
@@ -542,8 +551,8 @@ unsigned long iterateRgbThroughLightGradient(unsigned long color, float incremen
 
     unsigned long rgbOut = (a << 24) | convertHsl2rgb(hsl);
 
-    system("cls");
-    printf("rgb color: 0x%08x\th: %f, s: %f, l: %f", rgbOut, hsl.h, hsl.s, hsl.l);
+    //system("cls");
+    //printf("rgb color: 0x%08x\th: %f, s: %f, l: %f", rgbOut, hsl.h, hsl.s, hsl.l);
 
     return rgbOut;
 }
@@ -573,8 +582,8 @@ unsigned long increaseColorGradient(unsigned long color, uint8_t increment)
 
     unsigned long out = (a << 24) | (r << 16) | (g << 8) | b;
 
-    system("cls");
-    printf("0x%08x", out);
+   // system("cls");
+    //printf("0x%08x", out);
 
 
     return out;

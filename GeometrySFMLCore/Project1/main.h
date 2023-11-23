@@ -31,7 +31,7 @@ private:
 
     SfmlCoreWindow                      &coreWindow;
 
-    const uint64_t                      index;
+    const uint16_t                      round;
     float                               theta; // angle from the origin point (0, 0)
 
     // Visual radius of the circle, not to be confused with radius that is the actual radius
@@ -41,11 +41,11 @@ private:
 public:
     circleElement(
         SfmlCoreWindow &coreWindow, 
-        uint64_t index,
+        uint16_t round,
         float x, float y, float radius, 
         unsigned long backgroundColor, unsigned long edgeColor, float thickness) :
 
-        index(index),
+        round(round),
         coreWindow(coreWindow),
         
         posX(x), posY(y),
@@ -127,6 +127,11 @@ public:
     unsigned long GetBackgroundColor(unsigned long color) const
     {
         return backgroundColor;
+    }
+
+    uint16_t GetRound(void) const
+    {
+        return round;
     }
 
 private:

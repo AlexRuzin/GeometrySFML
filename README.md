@@ -1,5 +1,6 @@
 # GeometrySFML
-Experiment with drawing a cardioid using SFML. Algorithm is based on the Sacred Geometery 3-6-9 method, however as the number of points increases, the object converges towards a classical cardioid.
+Various experiments to draw geometric objects using the SFML 2D rendering framework. 
+`defines.h` contains the configuration for each object.
 
 #### "Flower of Life" simulation using radii iteration
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/1b56tz7Yu_E/0.jpg)](https://www.youtube.com/watch?v=1b56tz7Yu_E)

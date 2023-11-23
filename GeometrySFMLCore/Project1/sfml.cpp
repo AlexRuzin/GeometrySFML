@@ -47,7 +47,7 @@ void SFML_THREAD SfmlCoreWindow::windowThread(void)
     settings.antialiasingLevel = SFML_ANTI_ALIASING_VAL;
 #endif //SFML_ANTI_ALIASING
 
-    renderWindow = new sf::RenderWindow(sf::VideoMode(winWidth, winHeight), winName, sf::Style::Default, settings);
+    renderWindow = new sf::RenderWindow(sf::VideoMode(winWidth, winHeight), winName, sf::Style::None, settings);
     renderWindow->setFramerateLimit(SFML_FRAME_RATE);
 
 #if 0
